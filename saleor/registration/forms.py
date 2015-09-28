@@ -17,15 +17,19 @@ from .utils import get_client_class_for_service
 
 class LoginForm(AuthenticationForm):
 
-    username = forms.EmailField(label=pgettext_lazy('Form field', 'Email'),
-                                max_length=75)
+    username = forms.CharField(label=pgettext_lazy('Form field', 'Mobile'),
+                                max_length=10)
+    password = forms.CharField(label=pgettext_lazy('Form field', 'Password'),
+                                widget=forms.PasswordInput)
 
     def __init__(self, request=None, *args, **kwargs):
         super(LoginForm, self).__init__(request=request, *args, **kwargs)
+
         if request:
-            email = request.GET.get('email')
-            if email:
-                self.fields['username'].initial = email
+            #print(request.GET)
+            mobile = request.GET.get('username')
+            if mobile:
+                self.fields['mobile'].initial = mobile
 
 
 class SetOrRemovePasswordForm(SetPasswordForm):

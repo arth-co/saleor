@@ -13,7 +13,7 @@ from .product.urls import urlpatterns as product_urls
 from .registration.urls import urlpatterns as registration_urls
 from .userprofile.urls import urlpatterns as userprofile_urls
 from .dashboard.urls import urlpatterns as dashboard_urls
-
+from .api.urls import urlpatterns as api_urls
 
 admin.autodiscover()
 
@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^products/', include(product_urls, namespace='product')),
     url(r'^profile/', include(userprofile_urls, namespace='profile')),
     url(r'^selectable/', include('selectable.urls')),
+    url(r'^api/', include(api_urls, namespace='api')),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'', include('payments.urls'))

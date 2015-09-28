@@ -8,12 +8,12 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import pgettext_lazy
+from django.core.validators import RegexValidator
 
 from ..core.countries import COUNTRY_CHOICES
 
 
 class AddressManager(models.Manager):
-
     def as_data(self, address):
         return model_to_dict(address, exclude=['id', 'user'])
 
@@ -79,19 +79,19 @@ class Address(models.Model):
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, email, password=None, is_staff=False,
+    def create_user(self, mobile, password=None, is_staff=False,
                     is_active=True, **extra_fields):
-        'Creates a User with the given username, email and password'
-        email = UserManager.normalize_email(email)
-        user = self.model(email=email, is_active=is_active,
+        'Creates a User with the given username, mobile and password'
+        #email = UserManager.normalize_email(email)
+        user = self.model(mobile=mobile, is_active=is_active,
                           is_staff=is_staff, **extra_fields)
         if password:
             user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        return self.create_user(email, password, is_staff=True,
+    def create_superuser(self, mobile, password=None, **extra_fields):
+        return self.create_user(mobile, password, is_staff=True,
                                 is_superuser=True, **extra_fields)
 
     def store_address(self, user, address, billing=False, shipping=False):
@@ -107,9 +107,18 @@ class UserManager(BaseUserManager):
             user.save()
 
 
+'''
+@python_2_unicode_compatible
+class PhoneModel(models.Model):
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{10,10}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone_number = models.CharField(validators=[phone_regex], blank=True) # validators should be a list
+'''
+
 @python_2_unicode_compatible
 class User(PermissionsMixin, models.Model):
-    email = models.EmailField(unique=True)
+    #email = models.EmailField(unique=True)
+    mobile_regex = RegexValidator(regex=r'^\d{10,10}$', message="Phone number must be entered in the format: '+999999999' and is ")
+    mobile = models.CharField(validators=[mobile_regex], unique=True, max_length=10)
     addresses = models.ManyToManyField(Address, blank=True)
     is_staff = models.BooleanField(
         pgettext_lazy('User field', 'staff status'),
@@ -135,7 +144,7 @@ class User(PermissionsMixin, models.Model):
         on_delete=models.SET_NULL,
         verbose_name=pgettext_lazy('User field', 'default billing address'))
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'mobile'
 
     REQUIRED_FIELDS = []
 
@@ -148,14 +157,14 @@ class User(PermissionsMixin, models.Model):
         return (self.get_username(),)
 
     def get_full_name(self):
-        return self.email
+        return self.mobile
 
     def get_short_name(self):
-        return self.email
+        return self.mobile
 
     def get_username(self):
         'Return the identifying username for this User'
-        return self.email
+        return self.mobile
 
     def is_anonymous(self):
         return False

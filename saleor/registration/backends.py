@@ -15,12 +15,23 @@ class Backend(ModelBackend):
             return None
 
 
-class EmailPasswordBackend(Backend):
-    """Authentication backend that expects an email in username parameter."""
+class UsernamePasswordBackend(Backend):
+    """Authentication backend that expects an mobile in username parameter."""
 
     def authenticate(self, username=None, password=None, **_kwargs):
         try:
-            user = User.objects.get(email=username)
+            user = User.objects.get(mobile=username)
+        except User.DoesNotExist:
+            return None
+        if user.check_password(password):
+            return user
+
+class MobilePasswordBackend(Backend):
+    """Authentication backend that expects mobile and password parameters."""
+
+    def authenticate(self, mobile=None, password=None, **_kwargs):
+        try:
+            user = User.objects.get(mobile=mobile)
         except User.DoesNotExist:
             return None
         if user.check_password(password):

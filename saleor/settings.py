@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     'saleor.order',
     'saleor.registration',
     'saleor.dashboard',
+    'saleor.api',
 
     # External apps
     'versatileimagefield',
@@ -138,6 +139,9 @@ INSTALLED_APPS = [
     'selectable',
     'materializecssform',
     'rest_framework',
+    'rest_framework_xml',
+    'rest_framework.authtoken',
+    'django_filters',
 ]
 
 LOGGING = {
@@ -188,12 +192,26 @@ LOGGING = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'saleor.registration.backends.EmailPasswordBackend',
-    'saleor.registration.backends.ExternalLoginBackend',
-    'saleor.registration.backends.TrivialBackend'
+
+    'saleor.registration.backends.UsernamePasswordBackend',
+    'saleor.registration.backends.MobilePasswordBackend',
+    #'saleor.registration.backends.ExternalLoginBackend',
+    #'saleor.registration.backends.TrivialBackend'
 )
 
 AUTH_USER_MODEL = 'userprofile.User'
+
+REST_FRAMEWORK = {
+        'PAGE_SIZE': 10,
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.SessionAuthentication',
+            'rest_framework.authentication.BasicAuthentication',
+            'rest_framework.authentication.TokenAuthentication'
+        ),
+        'DEFAULT_FILTER_BACKENDS': (
+            'rest_framework.filters.DjangoFilterBackend',
+        )
+}
 
 CANONICAL_HOSTNAME = os.environ.get('CANONICAL_HOSTNAME', 'localhost:8000')
 
@@ -201,8 +219,8 @@ LOGIN_URL = '/account/login'
 
 WARN_ABOUT_INVALID_HTML5_OUTPUT = False
 
-DEFAULT_CURRENCY = 'USD'
-DEFAULT_WEIGHT = 'lb'
+DEFAULT_CURRENCY = 'INR'
+DEFAULT_WEIGHT = 'KG'
 
 ACCOUNT_ACTIVATION_DAYS = 3
 
@@ -261,3 +279,20 @@ if AWS_MEDIA_BUCKET_NAME:
     THUMBNAIL_DEFAULT_STORAGE = DEFAULT_FILE_STORAGE
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+'''
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'saleor.registration.backends.MobilePasswordBackend',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+
+
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_xml.parsers.XMLParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_xml.renderers.XMLRenderer',
+    ),
+'''

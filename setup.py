@@ -49,6 +49,8 @@ setup(
         'django-payments>=0.7.0,<0.8a0',
         'django-prices>=0.4.0,<0.5a0',
         'djangorestframework>=3.1,<3.2a0',
+        'djangorestframework-xml',
+        'django-filter',
         'django-selectable==0.8.0',
         'django-versatileimagefield>=1.0.1,<1.1a0',
         'fake-factory>=0.3.2',
