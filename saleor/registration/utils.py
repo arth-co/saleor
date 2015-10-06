@@ -37,7 +37,10 @@ def get_google_login_url(local_host):
 
 
 def get_facebook_login_url(local_host):
+    print('In get facebook function')
+    print(settings.FACEBOOK_APP_ID)
     if settings.FACEBOOK_APP_ID:
+
         client_class = get_client_class_for_service(FACEBOOK)(local_host)
         return client_class.get_login_uri()
 

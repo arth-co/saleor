@@ -14,6 +14,7 @@ from ..cart.utils import (
 
 
 def index(request, product_id=None):
+
     if product_id is not None:
         product_id = int(product_id)
     cart = Cart.for_session_cart(request.cart, discounts=request.discounts)

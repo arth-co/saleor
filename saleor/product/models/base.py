@@ -23,7 +23,7 @@ from versatileimagefield.fields import VersatileImageField
 from .discounts import get_product_discounts
 from .fields import WeightField
 from saleor.product.utils import get_attributes_display_map
-
+from saleor.userprofile.models import User,Vendor, Address
 
 @python_2_unicode_compatible
 class Category(MPTTModel):
@@ -89,6 +89,11 @@ class Product(models.Model, ItemRange):
         pgettext_lazy('Product field', 'available on'), blank=True, null=True)
     attributes = models.ManyToManyField(
         'ProductAttribute', related_name='products', blank=True)
+
+    vendor = models.ForeignKey(Vendor,default=1)
+    is_subscribable = models.BooleanField(pgettext_lazy('Product field', 'Is Subscribable'),
+                                          default=False)
+
 
     objects = ProductManager()
 
@@ -238,8 +243,8 @@ class Stock(models.Model):
     variant = models.ForeignKey(
         ProductVariant, related_name='stock',
         verbose_name=pgettext_lazy('Stock item field', 'variant'))
-    location = models.CharField(
-        pgettext_lazy('Stock item field', 'location'), max_length=100)
+    location = models.ForeignKey(Address, related_name='+',
+        verbose_name= pgettext_lazy('Stock item field', 'location'), null=True)
     quantity = models.IntegerField(
         pgettext_lazy('Stock item field', 'quantity'),
         validators=[MinValueValidator(0)], default=Decimal(1))
@@ -295,3 +300,5 @@ class AttributeChoiceValue(models.Model):
 
     def __str__(self):
         return self.display
+
+

@@ -4,7 +4,8 @@ from django.forms.models import BaseInlineFormSet
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from .models import Order, OrderedItem, Payment
+from .models import Order, OrderedItem, Payment, DeliveryGroup, OrderHistoryEntry, OrderNote, \
+    SubscriptionProduct
 
 
 def format_address(address):
@@ -85,7 +86,7 @@ class DeliveryInlineAdmin(admin.TabularInline):
 class OrderAdmin(OrderModelAdmin):
 
     inlines = [PaymentInlineAdmin]
-    exclude = ['token']
+    #exclude = ['token']
     readonly_fields = ['customer', 'total']
     list_display = ['__str__', 'status', 'created', 'user']
 
@@ -103,3 +104,9 @@ class OrderAdmin(OrderModelAdmin):
 
 
 admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderedItem)
+admin.site.register(DeliveryGroup)
+admin.site.register(OrderHistoryEntry)
+admin.site.register(OrderNote)
+admin.site.register(SubscriptionProduct)
+

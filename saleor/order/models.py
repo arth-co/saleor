@@ -15,16 +15,20 @@ from django.utils.timezone import now
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import pgettext_lazy
 from django_prices.models import PriceField
+
 from payments import PurchasedItem
 from payments.models import BasePayment
 from prices import Price
 from satchless.item import ItemSet, ItemLine
 
+
 from ..core.utils import build_absolute_uri
+from ..core.models import Weekday
 from ..product.models import Product, ProductVariant
 from saleor.cart import CartLine
 from ..userprofile.models import Address, User
 from ..delivery import get_delivery
+
 
 
 @python_2_unicode_compatible
@@ -395,3 +399,27 @@ class OrderNote(models.Model):
 
     def __str__(self):
         return 'OrderNote for Order #%d' % self.order.pk
+'''
+@python_2_unicode_compatible
+class Subscription(models.Model):
+    user = models.OneToOneField(
+        User, blank=True, primary_key=True, related_name='subscriptions',
+        verbose_name=pgettext_lazy('Subscription field', 'user'))
+
+    def __str__(self):
+        return self.user.mobile
+'''
+
+@python_2_unicode_compatible
+class SubscriptionProduct(models.Model):
+    user = models.ForeignKey(
+        User, blank=True, null=True, related_name='products',
+        verbose_name=pgettext_lazy('Subscription field', 'subscription'))
+    delivery_days = models.ManyToManyField(Weekday)
+    product = models.ForeignKey(
+            Product, blank=True, null=True, related_name='subscriptions',
+            verbose_name=pgettext_lazy('OrderedItem field', 'product'))
+    quantity = models.IntegerField(
+        pgettext_lazy('OrderedItem field', 'quantity'),
+        validators=[MinValueValidator(0), MaxValueValidator(999)])
+

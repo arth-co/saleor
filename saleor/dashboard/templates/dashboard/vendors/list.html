@@ -1,0 +1,91 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+{% load prices_i18n %}
+{% load materializecss %}
+
+{% block title %}{% trans "Vendors" %} - {{ block.super }}{% endblock %}
+
+{% block body_class %}body-vendors{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumbs">
+        <li>{% trans "Vendors" %}</li>
+    </ul>
+{% endblock %}
+
+{% block menu_sales_class %} active{% endblock %}
+
+{% block content %}
+    <form method="get">
+        <div class="row">
+            {{ form.name|materializecss:"s12 m3 l3" }}
+
+            <div class="col s5 m3 l3">
+                <button type="submit" class="btn btn--inline">{% trans "Filter" %}</button>
+                {% if form.is_bound %}
+                    <a class="btn btn--inline" href="{% url 'dashboard:vendors' %}">{% trans "Clear" %}</a>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+
+    <div class="card">
+        <div class="data-table-header{% if not vendors %} data-table-header--no-data{% endif %}">
+            <h5 class="card-title black-text">{{ title }}</h5>
+        </div>
+
+        {% if vendors %}
+            <div class="data-table-container">
+                <table class="bordered hoverable responsive data-table">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Name" %}</th>
+                            <th class="wide">{% trans "Warehouse Location" %}</th>
+                            <th>{% trans "Users" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for vendor in vendors %}
+                        <tr>
+                            {% with vendor.default_warehouse as default_warehouse %}
+
+                            <td>
+                                <a href="">{{ vendor.name }}</a>
+                            </td>
+                            {% if default_warehouse %}
+
+                                <td>
+                                    {{ default_warehouse.city }}, {{ default_warehouse.get_country_display }}
+                                </td>
+                            {% else %}
+                                <td colspan="2"></td>
+                            {% endif %}
+
+                            {% endwith %}
+                            {% with vendor.admin_user as admin_user %}
+
+                            {% if admin_user %}
+
+                                <td>
+                                    {{ admin_user.mobile }}
+                                </td>
+                            {% else %}
+                                <td colspan="2"></td>
+                            {% endif %}
+                            {% endwith %}
+
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card-content card-content--no-data">
+                <p>{% trans "No vendors found." %}</p>
+            </div>
+        {% endif %}
+    </div>
+    {% include "dashboard/includes/_pagination.html" with page_obj=vendors %}
+{% endblock %}

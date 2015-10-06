@@ -59,18 +59,36 @@
             </div>
 
             {% if product.is_in_stock %}
-                {% block orderform %}
-                <form role="form" class="product-form form-vertical" method="post" action=".">
-                    {% csrf_token %}
-                    {{ form|as_vertical_form }}
+                {% if product.is_subscribable %}
+                    {% block subscriptionform %}
+                    <form role="form" class="product-form form-vertical" method="post" action=".">
+                        {% csrf_token %}
+                        {{ form|as_vertical_form }}
 
-                    <div class="form-group">
-                        <button class="btn btn-lg btn-block btn-primary">
-                            {% trans "Add to cart" %}
-                        </button>
-                    </div>
-                </form>
-                {% endblock %}
+                        <div class="form-group">
+                            <button class="btn btn-lg btn-block btn-primary" name="action" value="submit">
+                                {% trans "Try Now" %}
+                            </button>
+                            <button class="btn btn-lg btn-block btn-primary" name="action" value="subscribe">
+                                {% trans "Subscribe" %}
+                            </button>
+                        </div>
+                    </form>
+                    {% endblock %}
+                {% else %}
+                    {% block orderform %}
+                    <form role="form" class="product-form form-vertical" method="post" action=".">
+                        {% csrf_token %}
+                        {{ form|as_vertical_form }}
+
+                        <div class="form-group">
+                            <button class="btn btn-lg btn-block btn-primary" name="action" value="submit">
+                                {% trans "Add to cart" %}
+                            </button>
+                        </div>
+                    </form>
+                    {% endblock %}
+                {% endif %}
             {% else %}
                 <p class="alert alert-warning">{% trans "This product is currently <strong>unavailable</strong>." %}</p>
             {% endif %}

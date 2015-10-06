@@ -25,6 +25,7 @@ class ProductClassForm(forms.Form):
 
 
 class StockForm(forms.ModelForm):
+
     class Meta:
         model = Stock
         exclude = []
@@ -34,6 +35,9 @@ class StockForm(forms.ModelForm):
         super(StockForm, self).__init__(*args, **kwargs)
         self.fields['variant'] = forms.ModelChoiceField(
             queryset=product.variants)
+        self.fields['location'] = forms.ModelChoiceField(
+            queryset=product.vendor.warehouses.all()
+        )
 
 
 class ProductForm(forms.ModelForm):

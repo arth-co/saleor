@@ -76,6 +76,9 @@ class Address(models.Model):
                 self.postal_code, self.country, self.country_area,
                 self.phone))
 
+    class Meta:
+        verbose_name_plural = 'Addresses'
+
 
 class UserManager(BaseUserManager):
 
@@ -119,6 +122,13 @@ class User(PermissionsMixin, models.Model):
     #email = models.EmailField(unique=True)
     mobile_regex = RegexValidator(regex=r'^\d{10,10}$', message="Phone number must be entered in the format: '+999999999' and is ")
     mobile = models.CharField(validators=[mobile_regex], unique=True, max_length=10)
+    first_name = models.CharField(
+        pgettext_lazy('Address field', 'first name'),
+        max_length=256, blank=False, default='')
+    last_name = models.CharField(
+        pgettext_lazy('Address field', 'last name'),
+        max_length=256, blank=False, default='')
+    email = models.EmailField(unique=False,blank=True)
     addresses = models.ManyToManyField(Address, blank=True)
     is_staff = models.BooleanField(
         pgettext_lazy('User field', 'staff status'),
@@ -157,10 +167,10 @@ class User(PermissionsMixin, models.Model):
         return (self.get_username(),)
 
     def get_full_name(self):
-        return self.mobile
+        return self.first_name + " " + self.last_name
 
     def get_short_name(self):
-        return self.mobile
+        return self.first_name
 
     def get_username(self):
         'Return the identifying username for this User'
@@ -186,3 +196,25 @@ class User(PermissionsMixin, models.Model):
 
     def has_usable_password(self):
         return is_password_usable(self.password)
+
+
+def get_admin_user():
+    return User.objects.filter(is_superuser=True)[0]
+
+@python_2_unicode_compatible
+class Vendor(models.Model):
+    name = models.CharField(pgettext_lazy('Address field', 'Vendor Name'),
+        max_length=256)
+    warehouses = models.ManyToManyField(Address, blank=True)
+    users = models.ManyToManyField(User,blank=False)
+    default_warehouse = models.ForeignKey(
+        Address, related_name='+', null=True, blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=pgettext_lazy('User field', 'Default Warehouse'))
+    admin_user = models.ForeignKey(
+        User, related_name='+', null=True, blank=True,
+        #on_delete=get_admin_user(),
+        #default=get_admin_user(),
+        verbose_name=pgettext_lazy('User field', 'Admin User'))
+    def __str__(self):
+        return self.name

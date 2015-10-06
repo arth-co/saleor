@@ -10,6 +10,12 @@ from .forms import get_form_class_for_product
 from .models import Product, Category
 from saleor.cart import Cart
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def subscribe(request,slug,product_id):
+    print('Subscribe Function Called')
+    pass
 
 def product_details(request, slug, product_id):
     products = Product.objects.get_available_products().select_subclasses()
@@ -24,17 +30,28 @@ def product_details(request, slug, product_id):
                       data=request.POST or None)
     if form.is_valid():
         if form.cleaned_data['quantity']:
-            msg = _('Added %(product)s to your cart.') % {
-                'product': product}
-            messages.success(request, msg)
-        form.save()
-        return redirect('product:details', slug=slug, product_id=product_id)
+            action = request.POST.get('action')
+            if action == 'submit':
+                msg = _('Added %(product)s to your cart.') % {
+                    'product': product}
+                messages.success(request, msg)
+                form.save()
+                return redirect('product:details', slug=slug, product_id=product_id)
+            elif action == 'subscribe':
+                msg = _('Subscription requested') % {
+                    'product': product}
+                #subscribe(request,slug,product_id)
+                messages.success(request,msg)
+
+
     template_name = 'product/details_%s.html' % (
         type(product).__name__.lower(),)
     templates = [template_name, 'product/details.html']
     return TemplateResponse(
         request, templates,
         {'product': product, 'form': form})
+
+
 
 
 def category_index(request, path, category_id):
