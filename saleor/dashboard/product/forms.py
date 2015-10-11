@@ -57,15 +57,19 @@ class ProductForm(forms.ModelForm):
             'data-placeholder'] = pgettext_lazy('Product form labels', 'Search')
         self.fields['attributes'].widget.attrs[
             'data-placeholder'] = pgettext_lazy('Product form labels', 'Search')
-        if self.instance.available_on:
-            self.fields['available_on'].widget.attrs[
-                'datavalue'] = self.instance.available_on.strftime('%Y/%m/%d')
+        self.fields['days_available'].widget.attrs[
+            'data-placeholder'] = pgettext_lazy('Product form labels', 'Select Weekdays')
+        #self.fields['days_available'].widget.attrs[
+        #    'initial'] = Product.ALL_WEEKDAYS
+        #if self.instance.available_on:
+        #    self.fields['available_on'].widget.attrs[
+        #        'datavalue'] = self.instance.available_on.strftime('%Y/%m/%d')
 
     def clean(self):
         data = super(ProductForm, self).clean()
-        data['available_on'] = data.get('available_on_submit')
-        if data['available_on'] and 'available_on' in self._errors:
-            del self._errors['available_on']
+        #data['available_on'] = data.get('available_on_submit')
+        #if data['available_on'] and 'available_on' in self._errors:
+        #    del self._errors['available_on']
         return data
 
 

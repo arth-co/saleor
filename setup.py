@@ -61,6 +61,8 @@ setup(
         'requests>=1.2.0',
         'satchless>=1.1.2,<1.2a0',
         'unidecode',
+        'googlemaps',
+        'psycopg2',
     ],
     extras_require={
         'PaaS': [

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
 
-from .models import (ProductImage, Category, FixedProductDiscount, Product, ProductVariant)
+from .models import (ProductImage, Category, FixedProductDiscount, Product, ProductVariant, Stock)
 from .forms import ImageInline
 
 
@@ -18,3 +18,4 @@ admin.site.register(Category, MPTTModelAdmin)
 admin.site.register(FixedProductDiscount)
 admin.site.register(Product)
 admin.site.register(ProductVariant)
+admin.site.register(Stock)

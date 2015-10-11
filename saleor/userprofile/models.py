@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import (check_password, make_password,
                                          is_password_usable)
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 from django.db import models
+from django.contrib.gis.db import models as gismodels
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
@@ -60,6 +61,7 @@ class Address(models.Model):
     phone = models.CharField(
         pgettext_lazy('Address field', 'phone number'),
         max_length=30, blank=True)
+    #geo_address = gismodels.PointField(null=True)
 
     objects = AddressManager()
 

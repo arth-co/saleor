@@ -21,10 +21,11 @@ ADMINS = (
 MANAGERS = ADMINS
 INTERNAL_IPS = os.environ.get('INTERNAL_IPS', '127.0.0.1').split()
 
+SPATIALITE_LIBRARY_PATH='/Library/Frameworks/SQLite3.framework/SQLite3'
 SQLITE_DB_URL = 'sqlite:///' + os.path.join(PROJECT_ROOT, 'dev.sqlite')
 
 DATABASES = {'default': dj_database_url.config(default=SQLITE_DB_URL)}
-
+#DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 TIME_ZONE = 'Asia/Calcutta'
 LANGUAGE_CODE = 'en-us'

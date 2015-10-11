@@ -49,6 +49,7 @@ def product_edit(request, pk):
     stock_items = Stock.objects.filter(variant__in=variants)
 
     form = forms.ProductForm(request.POST or None, instance=product)
+
     variants_delete_form = forms.VariantBulkDeleteForm()
     stock_delete_form = forms.StockBulkDeleteForm()
 

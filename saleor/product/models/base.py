@@ -24,6 +24,7 @@ from .discounts import get_product_discounts
 from .fields import WeightField
 from saleor.product.utils import get_attributes_display_map
 from saleor.userprofile.models import User,Vendor, Address
+from ...core.models import Weekday, DeliverySlot
 
 @python_2_unicode_compatible
 class Category(MPTTModel):
@@ -66,8 +67,9 @@ class Category(MPTTModel):
 class ProductManager(InheritanceManager):
     def get_available_products(self):
         today = datetime.datetime.today()
-        return self.get_queryset().filter(
-            Q(available_on__lte=today) | Q(available_on__isnull=True))
+        return self.get_query_set().all()
+        #return self.get_queryset().filter(
+        #    Q(available_on__lte=today) | Q(available_on__isnull=True))
 
 
 @python_2_unicode_compatible
@@ -85,12 +87,16 @@ class Product(models.Model, ItemRange):
     weight = WeightField(
         pgettext_lazy('Product field', 'weight'), unit=settings.DEFAULT_WEIGHT,
         max_digits=6, decimal_places=2)
-    available_on = models.DateField(
-        pgettext_lazy('Product field', 'available on'), blank=True, null=True)
+    lead_time = models.DurationField(pgettext_lazy('Product field', 'lead time'),
+                                     default=datetime.timedelta(days=0,hours=0))
+    ALL_WEEKDAYS = [weekday.pk for weekday in Weekday.objects.all()]
+
+    days_available = models.ManyToManyField(Weekday, default=ALL_WEEKDAYS)
+    slots_available = models.ManyToManyField(DeliverySlot, default=0)
     attributes = models.ManyToManyField(
         'ProductAttribute', related_name='products', blank=True)
 
-    vendor = models.ForeignKey(Vendor,default=1)
+    vendor = models.ForeignKey(Vendor,default=1, null=False)
     is_subscribable = models.BooleanField(pgettext_lazy('Product field', 'Is Subscribable'),
                                           default=False)
 
@@ -99,6 +105,14 @@ class Product(models.Model, ItemRange):
 
     class Meta:
         app_label = 'product'
+
+    @classmethod
+    def create(cls):
+        product = cls()
+        product.days_available.add(cls.ALL_WEEKDAYS)
+        # do something with the book
+        return product
+
 
     def __iter__(self):
         if not hasattr(self, '__variants'):
@@ -154,7 +168,10 @@ class Product(models.Model, ItemRange):
             if not category.hidden:
                 return category
         return None
-
+    def next_delivery_slot(self, curr_time):
+        pass
+        #days_available = [day.iso_number for day in swarg_milk.days_available.all()]
+        #next_delivery_slot = self.days_available.filter(iso_number__gt=(curr_time + self.lead_time).isoweekday()).order_by('iso_number').first()
 
 @python_2_unicode_compatible
 class ProductVariant(models.Model, Item):
